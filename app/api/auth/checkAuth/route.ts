@@ -35,7 +35,9 @@ export async function GET(request: NextRequest) {
       user,
       token
     });
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error('Auth check failed:', error);
+
     return NextResponse.json(
       { message: "Auth check failed" },
       { status: 500 }

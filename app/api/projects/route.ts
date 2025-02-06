@@ -5,7 +5,7 @@ import { sql, eq, and, inArray } from "drizzle-orm";
 import { cookies } from 'next/headers';
 import { verifyToken } from "@/lib/utils/auth";
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const token = (await cookies()).get('token')?.value;
     if (!token) {
@@ -22,7 +22,8 @@ export async function GET(request: Request) {
       .orderBy(projects.createdAt);
 
     return NextResponse.json(userProjects, { status: 200 });
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error(error);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -88,13 +89,13 @@ export async function POST(request: Request) {
   
 
     return NextResponse.json(newProject[0]);
-  } catch (error: any) {
-    if (error.code === '23505') { // PostgreSQL unique violation
-      return NextResponse.json(
-        { message: "Project with this name already exists" },
-        { status: 400 }
-      );
-    }
+  } catch (error: unknown) {
+    // if (error.code === '23505') { // PostgreSQL unique violation
+    //   return NextResponse.json(
+    //     { message: "Project with this name already exists" },
+    //     { status: 400 }
+    //   );
+    // }
     console.log("Error creating project:", error);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
@@ -181,11 +182,11 @@ export async function PATCH(request: Request) {
     }
 
     return NextResponse.json(updatedProject[0]);
-  } catch (error: any) {
-    if(error.code === '23505') {
-      return NextResponse.json({ message: "Project with this name already exists" }, { status: 400 });
-    }
-
+  } catch (error: unknown) {
+    // if(error.code === '23505') {
+    //   return NextResponse.json({ message: "Project with this name already exists" }, { status: 400 });
+    // }
+    console.log(error);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -218,7 +219,8 @@ export async function DELETE(request: Request) {
     }
 
     return NextResponse.json({ message: "Project deleted successfully" });
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error(error);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }

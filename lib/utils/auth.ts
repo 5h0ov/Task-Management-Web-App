@@ -1,23 +1,23 @@
 // at first thought to use jose for the whole authentication but later scrapped and used zustand checkUser() instead
 
-import { SignJWT, jwtVerify } from 'jose';
-import { NextRequest } from 'next/server';
+import { SignJWT, jwtVerify, JWTPayload as JoseJWTPayload } from 'jose';
+// import { NextRequest } from 'next/server';
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 const alg = 'HS256';
 
-export async function createToken(payload: any) {
-  console.log('payload:', payload);
+export async function createToken(payload: JWTPayload) {
+  console.log("payload:", payload);
 
-  return await new SignJWT(payload)
+  return await new SignJWT(payload as JoseJWTPayload)
     .setProtectedHeader({ alg })
     .setIssuedAt()
-    .setExpirationTime('24h')
+    .setExpirationTime("24h")
     .sign(secret);
 }
 
 
-interface JWTPayload {
+interface JWTPayload extends JoseJWTPayload {
   id: string;
   email: string;
   name: string;
@@ -28,7 +28,8 @@ export async function verifyToken(token: string) {
   try {
     const { payload } = await jwtVerify(token, secret);
     return payload;
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error('Token verification failed:', error);
     return null;
   }
 }
@@ -52,7 +53,7 @@ export async function verifyToken(token: string) {
 //     }
     
 //     return payload;
-//   } catch (error) {
+//   } catch (error: unknown) {
 //     return null;
 //   }
 // }

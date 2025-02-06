@@ -98,7 +98,7 @@ export default function ProjectsPage() {
       setIsProjectDialogOpen(false);
       setEditingProject(null);
     },
-    onError: (error: any) => {
+    onError: (error) => {
       console.error("Error updating project:", error);
       toast.error("Failed to update project");
     }
@@ -116,7 +116,7 @@ export default function ProjectsPage() {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
       toast.success("Project deleted successfully");
     },
-    onError: (error: any) => {
+    onError: (error) => {
       console.error("Error deleting project:", error);
       toast.error("Failed to delete project");
     }
@@ -135,7 +135,8 @@ export default function ProjectsPage() {
       } else {
         await createProjectMutation.mutateAsync(data);
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error("Error creating/updating project:", error);
       toast.error(editingProject ? "Failed to update project" : "Failed to create project");
     }
   };
@@ -151,7 +152,8 @@ export default function ProjectsPage() {
     if (window.confirm("Are you sure you want to delete this project?")) {
       try {
         await deleteProjectMutation.mutateAsync(projectId);
-      } catch (error) {
+      } catch (error: unknown) {
+        console.error("Error deleting project:", error);
         toast.error("Failed to delete project");
       }
     }

@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { categories, categoryAssignments } from "@/lib/db/schema";
+import { categories } from "@/lib/db/schema";
 import { sql, eq, and } from "drizzle-orm";
 import { cookies } from 'next/headers';
 import { verifyToken } from "@/lib/utils/auth";
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const token = (await cookies()).get('token')?.value;
     if (!token) {
@@ -33,7 +33,8 @@ export async function GET(request: Request) {
     // });
 
     return NextResponse.json(userCategories, { status: 200 });
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error(error);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }
@@ -81,13 +82,13 @@ export async function POST(request: Request) {
       .returning();
 
       return NextResponse.json(newCategory[0]);
-  } catch (error: any) {
-    if (error.code === "23505") { // PostgreSQL unique violation
-      return NextResponse.json(
-        { message: "Category with this name already exists" },
-        { status: 400 }
-      );
-    }
+  } catch (error: unknown) {
+    // if (error.code === "23505") { // PostgreSQL unique violation
+    //   return NextResponse.json(
+    //     { message: "Category with this name already exists" },
+    //     { status: 400 }
+    //   );
+    // }
     console.error(error);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
@@ -123,7 +124,7 @@ export async function DELETE(request: Request) {
       .returning();
 
     return NextResponse.json(deletedCategory[0]);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error);
     return NextResponse.json(
       { message: "Failed to delete category" },

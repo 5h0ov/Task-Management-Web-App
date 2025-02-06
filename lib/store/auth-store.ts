@@ -21,7 +21,7 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       user: null,
       token: null,
       isLoading: false,
@@ -52,8 +52,8 @@ export const useAuthStore = create<AuthState>()(
             token: data.token,
             error: null 
           });
-        } catch (error: any) {
-          set({ user: null, token: null, error: error.message , isChecking: false });
+        } catch (error: unknown) {
+          set({ user: null, token: null, isChecking: false });
           console.error('Auth check failed:', error);
         } finally {
           set({ isLoading: false });
@@ -77,9 +77,10 @@ export const useAuthStore = create<AuthState>()(
           set({ user: data.user, token: data.token });
           toast.success("Login successful");
           return data;
-        } catch (error: any) {
-          set({ user: null, token: null, error: error.message });
-          toast.error(error.message);
+        } catch (error: unknown) {
+          console.error('Login failed:', error);
+          set({ user: null, token: null  });
+          toast.error("Login failed" );
           throw error;
         } finally {
           set({ isLoading: false });
@@ -104,9 +105,10 @@ export const useAuthStore = create<AuthState>()(
           toast.success("Registration successful");
           return data;
 
-        } catch (error: any) {
-          set({ user: null, token: null, error: error.message });
-          toast.error(error.message);
+        } catch (error: unknown) {
+          console.error('Registration failed:', error);
+          set({ user: null, token: null });
+          toast.error("Registration failed");
           throw error;
         } finally {
           set({ isLoading: false });
@@ -120,8 +122,9 @@ export const useAuthStore = create<AuthState>()(
           });
           set({ user: null, token: null });
           toast.success('Logout successful');
-        } catch (error: any) {
-          toast.error('Logout failed, Error: ' + error.message);
+        } catch (error: unknown) {
+          console.error('Logout failed:', error);
+          toast.error('Logout failed');
           set({ user: null, token: null });
         }
       },

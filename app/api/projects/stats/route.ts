@@ -17,7 +17,7 @@ interface ProjectStats extends Project {
   tasks: Task[];
 }
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const token = (await cookies()).get('token')?.value
     if (!token) {
@@ -73,7 +73,7 @@ export async function GET(request: Request) {
     });
 
     return NextResponse.json(projectStats, { status: 200 });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Project stats error:', error);
     return NextResponse.json(
       { message: "Internal Server Error" }, 

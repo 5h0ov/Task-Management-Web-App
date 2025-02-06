@@ -4,9 +4,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 import {
   Form,
@@ -52,7 +49,9 @@ export default function LoginPage() {
     loginMutation.mutate(data);
   }
 
-  const ErrorMessage = ({ error }: { error: any }) => {
+  const ErrorMessage = ({ error }: { error: 
+    { message: string } | null
+   }) => {
     if (!error) return null;
 
     return (

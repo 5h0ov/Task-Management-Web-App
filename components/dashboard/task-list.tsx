@@ -22,7 +22,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Calendar, MoreVertical, Tag, FolderKanban } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
 import { Task } from "@/lib/types/schema";
 
 const priorityColors = {

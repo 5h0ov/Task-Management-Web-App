@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/form";
 import { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { useQuery } from "@tanstack/react-query";
 import {
   Select,
   SelectContent,
@@ -41,15 +40,12 @@ import {
 } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { Project, Category } from "@/lib/types/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Task } from "@/lib/types/schema";
 import { z } from "zod";
 import { useProjectsAndCategories } from "@/lib/hooks/useProjectAndCategory";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { int } from "drizzle-orm/mysql-core";
 
 const taskSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -88,7 +84,7 @@ export function CreateTaskDialog({
   const [newCategoryColors, setNewCategoryColors] = useState<Record<string, string>>({});
   const [categorySearch, setCategorySearch] = useState("");
 
-  const [showColorPicker, setShowColorPicker] = useState(false);
+  // const [showColorPicker, setShowColorPicker] = useState(false);
   
   console.log("initial data: ", initialData);
   const form = useForm<TaskFormValues>({
@@ -124,7 +120,7 @@ export function CreateTaskDialog({
     } else {
       setSelectedProject(undefined);
     }
-  }, [initialData]);
+  }, [initialData, form]);
 
   
 
@@ -172,9 +168,9 @@ export function CreateTaskDialog({
       return [...prev, categoryId];
     });
 
-    if (isNew) {
-      setShowColorPicker(true);
-    }
+    // if (isNew) {
+    //   setShowColorPicker(true);
+    // }
   };
 
   
@@ -329,7 +325,7 @@ export function CreateTaskDialog({
                                onClick={() => handleProjectSelect(projectSearch)}
                              >
                                {selectedProject === projectSearch ? <Check className="mr-1 h-4 w-4" /> : <Plus className="mr-1 h-4 w-4" />}
-                               Create "{projectSearch}" Project
+                               Create &quot;{projectSearch}&quot; Project
                              </div>
                               ) : (
                                 "No projects found."
@@ -384,7 +380,7 @@ export function CreateTaskDialog({
                           onClick={() => handleCategorySelect(categorySearch, true)}
                         >
                           {selectedCategories.includes(categorySearch) ? <Check className="mr-1 h-4 w-4" /> : <Plus className="mr-1 h-4 w-4" />}
-                          Create "{categorySearch}" Category
+                          Create &quot;{categorySearch}&quot; Category
                         </div>
                       ) : (
                         "No categories found."

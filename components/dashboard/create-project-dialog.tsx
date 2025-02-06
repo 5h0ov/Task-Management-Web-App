@@ -96,7 +96,7 @@ export function CreateProjectDialog({
       });
       setSelectedTasks(initialData.tasks.map(task => task.id));
     }
-  }, [initialData]);
+  }, [initialData, form]);
 
 
 

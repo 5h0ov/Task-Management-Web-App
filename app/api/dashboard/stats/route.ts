@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { tasks, projects } from "@/lib/db/schema";
-import { and, eq, gte, lt, sql } from "drizzle-orm";
+import { and, eq, lt, sql } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/utils/auth";
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const token = (await cookies()).get('token')?.value;
     if (!token) {
@@ -96,7 +96,7 @@ export async function GET(request: Request) {
     };
 
     return NextResponse.json(stats, { status: 200 });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Dashboard stats error:', error);
     return NextResponse.json(
       { message: "Failed to fetch dashboard statistics" }, 

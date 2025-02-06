@@ -142,7 +142,8 @@ export async function GET(request: Request) {
       // if task has a category, add it to the categories array
       if (task.categoryId) {
         const existingTask = taskMap.get(task.id);
-        const categoryExists = existingTask.categories.some((c: any) => c.id === task.categoryId);
+        const categoryExists = existingTask.categories.some((c: 
+          { id: string; name: string; color: string; }) => c.id === task.categoryId);
         
         if (!categoryExists) {
           existingTask.categories.push({
@@ -157,7 +158,7 @@ export async function GET(request: Request) {
     const frontendTaskData = Array.from(taskMap.values());
     return NextResponse.json(frontendTaskData, { status: 200 });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.log(error);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
@@ -228,7 +229,9 @@ export async function POST(request: Request) {
           id: projects.id,
           name: projects.name
         },
-        categories: sql<any>`jsonb_agg(
+        categories: sql<
+          string
+        >`jsonb_agg(
           jsonb_build_object(
             'id', ${categories.id},
             'name', ${categories.name},
@@ -246,7 +249,7 @@ export async function POST(request: Request) {
 
 
     return NextResponse.json(taskWithRelations[0], { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.log("Error: ", error);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
@@ -341,7 +344,7 @@ export async function PATCH(request: Request) {
       .limit(1);
 
     return NextResponse.json(taskWithRelations[0], { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(error);
     return NextResponse.json(
       { message: "Failed to update task" }, 
@@ -385,7 +388,7 @@ export async function DELETE(request: Request) {
     }
 
     return NextResponse.json({ message: "Task deleted successfully" }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(error);
     return NextResponse.json(
       { message: "Failed to delete task" }, 

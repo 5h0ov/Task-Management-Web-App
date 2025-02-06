@@ -67,7 +67,8 @@ export async function GET(request: Request) {
 
       return NextResponse.json(dates.map(d => d.date), { status: 200 });
     } 
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error('Tasks by date error:', error);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }

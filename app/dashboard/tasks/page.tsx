@@ -64,7 +64,7 @@ export default function TasksPage() {
         }
       }
   
-      let categoryIds: string[] = [];
+      const categoryIds: string[] = [];
 
       // to create a new category if it doesn't exist
       if (data.categories && data.categories.length > 0) {
@@ -118,8 +118,9 @@ export default function TasksPage() {
       toast.success("Task created successfully");
       setIsTaskDialogOpen(false);
     },
-    onError: (error: any) => {
-      toast.error(error.messasge || "Failed to create task");
+    onError: (error) => {
+      console.error("Error creating task:", error);
+      toast.error("Failed to create task");
     },
   });
 
@@ -146,7 +147,7 @@ export default function TasksPage() {
       }
     }
   
-      let categoryIds: string[] = [];
+      const categoryIds: string[] = [];
       if (data.categories && data.categories.length > 0) {
         for (const categoryName of data.categories) {
           let categoryId = categories.find(c => c.name === categoryName)?.id;
@@ -215,7 +216,8 @@ export default function TasksPage() {
   const handleDelete = async (taskId: string) => {
     try {
       await deleteTaskMutation.mutateAsync(taskId);
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error('Error deleting task:', error);
       toast.error('Failed to delete task');
     }
   };
@@ -226,7 +228,8 @@ export default function TasksPage() {
         taskId, 
         data: { status } 
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error('Error updating task status:', error);
       toast.error('Failed to update task status');
     }
   };
@@ -248,7 +251,8 @@ export default function TasksPage() {
         await createTaskMutation.mutateAsync(data);
       }
       setIsTaskDialogOpen(false);
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error('Error creating/updating task:', error);
       toast.error(isEditing ? 'Failed to update task' : 'Failed to create task');
     }
   };

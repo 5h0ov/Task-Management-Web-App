@@ -58,7 +58,9 @@ export default function RegisterPage() {
     registerMutation.mutate(data);
   }
 
-  const ErrorMessage = ({ error }: { error: any }) => {
+  const ErrorMessage = ({ error }: { error: 
+    { message: string } | null 
+   }) => {
     if (!error) return null;
 
     return (

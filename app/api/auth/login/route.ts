@@ -60,9 +60,11 @@ export async function POST(request: Request) {
       },
       token,
     }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    console.error('Login failed:', error);
+
     return NextResponse.json(
-      { message: error.message || "Internal server error" },
+      { message: error || "Internal server error" },
       { status: 500 }
     );
   }

@@ -44,7 +44,7 @@ export async function GET(request: Request) {
     console.log("Available tasks:", availableTasks);
 
     return NextResponse.json(availableTasks, { status: 200 });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error fetching unassigned tasks:', error);
     return NextResponse.json(
       { message: "Failed to fetch unassigned tasks" }, 

@@ -58,9 +58,11 @@ export async function POST(request: Request) {
       user: newUser,
       token,
     }, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    console.error('Register failed:', error);
+
     return NextResponse.json(
-      { message: error.message || "Internal server error" },
+      { message: error || "Internal server error" },
       { status: 500 }
     );
   }
