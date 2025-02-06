@@ -5,13 +5,13 @@ const nextConfig: NextConfig = {
   // eslint: {
   //   ignoreDuringBuilds: true, // using this temporarily :()
   // },
-  webpack: (config) => {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@': __dirname,
-    };
-    return config;
-  },
+  // webpack: (config) => {
+  //   config.resolve.alias = {
+  //     ...config.resolve.alias,
+  //     '@': __dirname,
+  //   };
+  //   return config;
+  // },
 };
 
 export default nextConfig;
