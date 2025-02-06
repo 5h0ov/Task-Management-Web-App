@@ -5,6 +5,6 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true, // using this temporarily :()
   },
-}; :()
+}; 
 
 export default nextConfig;
