@@ -277,6 +277,57 @@ export async function PATCH(request: Request) {
     console.log("Task ID: ", taskId);
     const { categoryIds, projectId, ...taskData } = await request.json();
 
+    // If only status is being updated, don't touch other relations
+    if (Object.keys(taskData).length === 1 && taskData.status) {
+      const updatedTask = await db.update(tasks)
+        .set({
+          status: taskData.status,
+          updatedAt: new Date()
+        })
+        .where(
+          and(
+            eq(tasks.id, sql.raw(`'${taskId}'::uuid`)),
+            eq(tasks.userId, sql.raw(`'${payload.id}'::uuid`))
+          )
+        )
+        .returning();
+
+      // Get updated task with all its relations
+      const taskWithRelations = await db
+        .select({
+          id: tasks.id,
+          title: tasks.title,
+          description: tasks.description,
+          status: tasks.status,
+          priority: tasks.priority,
+          dueDate: tasks.dueDate,
+          createdAt: tasks.createdAt,
+          updatedAt: tasks.updatedAt,
+          project: {
+            id: projects.id,
+            name: projects.name
+          },
+          categories: sql<string>`
+            jsonb_agg(
+              jsonb_build_object(
+                'id', ${categories.id},
+                'name', ${categories.name},
+                'color', ${categories.color}
+              )
+            ) FILTER (WHERE ${categories.id} IS NOT NULL)
+          `
+        })
+        .from(tasks)
+        .leftJoin(projects, eq(tasks.projectId, projects.id))
+        .leftJoin(categoryAssignments, eq(tasks.id, categoryAssignments.taskId))
+        .leftJoin(categories, eq(categoryAssignments.categoryId, categories.id))
+        .where(eq(tasks.id, updatedTask[0].id))
+        .groupBy(tasks.id, projects.id)
+        .limit(1);
+
+      return NextResponse.json(taskWithRelations[0], { status: 200 });
+    }
+
     // Step 1: Clear existing category assignments
     await db.delete(categoryAssignments)
     .where(eq(categoryAssignments.taskId, sql.raw(`'${taskId}'::uuid`)));
@@ -369,7 +420,7 @@ export async function DELETE(request: Request) {
     const { searchParams } = new URL(request.url);
     const taskId = searchParams.get("id");
     
-
+    
     // delete task and ensure user owns it
     const deletedTask = await db.delete(tasks)
       .where(
