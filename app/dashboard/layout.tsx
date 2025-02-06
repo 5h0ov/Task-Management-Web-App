@@ -14,7 +14,7 @@ export default function DashboardLayout({
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2 font-bold">
             <Layout className="h-6 w-6" />
-            <a href="/">TaskFlow</a>
+            <span>TaskFlow</span>
           </div>
           <UserNav />
         </div>
