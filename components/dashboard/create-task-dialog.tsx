@@ -160,7 +160,7 @@ export function CreateTaskDialog({
     }
   };
 
-  const handleCategorySelect = (categoryId: string, isNew: boolean = false) => {
+  const handleCategorySelect = (categoryId: string) => {
     setSelectedCategories(prev => {
       if (prev.includes(categoryId)) {
         return prev.filter(id => id !== categoryId);
@@ -377,7 +377,7 @@ export function CreateTaskDialog({
                       {categorySearch ? (
                         <div 
                           className="flex items-center px-2 py-1.5 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-sm"
-                          onClick={() => handleCategorySelect(categorySearch, true)}
+                          onClick={() => handleCategorySelect(categorySearch)}
                         >
                           {selectedCategories.includes(categorySearch) ? <Check className="mr-1 h-4 w-4" /> : <Plus className="mr-1 h-4 w-4" />}
                           Create &quot;{categorySearch}&quot; Category
