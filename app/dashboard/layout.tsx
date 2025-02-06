@@ -8,14 +8,13 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
 
-  
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-50 border-b bg-background">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2 font-bold">
             <Layout className="h-6 w-6" />
-            <span>TaskFlow</span>
+            <a href="/">TaskFlow</a>
           </div>
           <UserNav />
         </div>
