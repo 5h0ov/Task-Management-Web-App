@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -44,7 +45,7 @@ export function UserNav() {
             <Avatar className="h-8 w-8">
               <AvatarFallback>
                 {user?.avatar ? (
-                  <img src={user.avatar} alt={user.name} />
+                  <Image src={user.avatar} alt={user.name} />
                 ) : (
                   user?.name?.split(" ").map((n) => n[0]).join("")  // shows the initials of the username
                 )}

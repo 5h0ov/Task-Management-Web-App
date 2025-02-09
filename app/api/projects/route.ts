@@ -17,9 +17,14 @@ export async function GET() {
       return NextResponse.json({ message: "Invalid token" }, { status: 401 });
     }
 
-    const userProjects = await db.select().from(projects)
-      .where(eq(projects.userId, sql.raw(`'${payload.id}'::uuid`)))
-      .orderBy(projects.createdAt);
+    const userProjects = await db
+    .select({
+      id: projects.id,
+      name: projects.name,
+    })
+    .from(projects)
+    .where(eq(projects.userId, sql.raw(`'${payload.id}'::uuid`)))
+    .orderBy(projects.createdAt);
 
     return NextResponse.json(userProjects, { status: 200 });
   } catch (error: unknown) {
