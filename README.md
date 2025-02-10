@@ -7,6 +7,7 @@ A Modern, Responsive Personal Task Management System made using Next.js 15 and P
   - Next.js 15
   - React 19
   - Tailwind CSS
+  - Radix UI Primitive Components
   - Zustand (State Management)
   - React Query (Data Fetching)
 
