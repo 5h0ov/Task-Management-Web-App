@@ -120,7 +120,13 @@ export function CreateTaskDialog({
     } else {
       setSelectedProject(undefined);
     }
-  }, [initialData, form]);
+
+    if(!open) {
+      form.reset();
+      setSelectedProject(undefined);
+      setSelectedCategories([]);
+    }
+  }, [initialData, form, open]);
 
   
 

@@ -96,7 +96,12 @@ export function CreateProjectDialog({
       });
       setSelectedTasks(initialData.tasks.map(task => task.id));
     }
-  }, [initialData, form]);
+    
+    if(!open) {
+      form.reset();
+      setSelectedTasks([]);
+    }
+  }, [initialData, form, open]);
 
 
 

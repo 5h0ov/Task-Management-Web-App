@@ -54,6 +54,13 @@ export default function ProjectsPage() {
 
   const createProjectMutation = useMutation({
     mutationFn: async (data: ProjectFormValues) => {
+      toast.loading("Creating project...", { autoClose: false });
+
+      const existingProject = projects.find((project) => project.name === data.name);
+      if (existingProject) {
+        throw new Error("Project name already exists");
+      }
+
       const response = await fetch("/api/projects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -70,16 +77,28 @@ export default function ProjectsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+
+      toast.dismiss();
       toast.success("Project created successfully");
       setIsProjectDialogOpen(false);
     },
-    onError: () => {
-      toast.error("Failed to create project");
+    onError: (error: Error) => {
+      console.error("Error creating project:", error);
+      toast.dismiss();
+      toast.error(error.message || "Failed to create project");
     },
   });
 
   const updateProjectMutation = useMutation({
     mutationFn: async ({ projectId, data }: { projectId: string; data: ProjectFormValues }) => {
+      toast.loading("Updating project...", { autoClose: false });
+
+      const existingProject = projects.find((project) => project.name === data.name && project.id !== projectId);
+      if (existingProject) {
+        throw new Error("Project name already exists");
+      }
+
       const response = await fetch(`/api/projects?id=${projectId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -94,18 +113,24 @@ export default function ProjectsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+
+      toast.dismiss();      
       toast.success("Project updated successfully");
       setIsProjectDialogOpen(false);
       setEditingProject(null);
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error("Error updating project:", error);
-      toast.error("Failed to update project");
+      toast.dismiss();
+      toast.error(error.message || "Failed to update project");
     }
   });
 
   const deleteProjectMutation = useMutation({
     mutationFn: async (projectId: string) => {
+      toast.loading("Deleting project...", { autoClose: false });
+      
       const response = await fetch(`/api/projects?id=${projectId}`, {
         method: "DELETE",
       });
@@ -114,10 +139,14 @@ export default function ProjectsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+
+      toast.dismiss();
       toast.success("Project deleted successfully");
     },
     onError: (error) => {
       console.error("Error deleting project:", error);
+      toast.dismiss();
       toast.error("Failed to delete project");
     }
   });

@@ -46,19 +46,23 @@ export default function TasksPage() {
   const createTaskMutation = useMutation({
     mutationFn: async (data: TaskFormValues) => {
       console.log("task creation data:", data); 
+      toast.loading("Creating...", { autoClose: false });
 
       let projectId: string | undefined;
       
       // to create a new project if it doesn't exist
       if(data.project)  {
-        projectId = projects.find(p => p.name === data.project)?.id;
+        projectId = projects.find(p => p.id === data.project)?.id;
+        console.log("found project id:", projectId);
+
         if (!projectId) {
           const projectResponse = await fetch("/api/projects", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name: data.project }),
           });
-          if (!projectResponse.ok) throw new Error("Failed to create project");
+          console.log("project response:", projectResponse);
+          if (!projectResponse.ok) throw new Error(projectResponse.statusText ||  "Failed to create project");
           const newProject = await projectResponse.json();
           projectId = newProject.id;
         }
@@ -81,7 +85,7 @@ export default function TasksPage() {
                 color: data.categoryColors?.[categoryName]
               }),
             });
-            if (!categoryResponse.ok) throw new Error("Failed to create category");
+            if (!categoryResponse.ok) throw new Error(categoryResponse.statusText || "Failed to create category");
             const newCategory = await categoryResponse.json();
             categoryId = newCategory.id;
           }
@@ -90,6 +94,11 @@ export default function TasksPage() {
         }
       }
   
+      const existingTask = tasks.find((task) => task.title === data.title);
+      if (existingTask) {
+        throw new Error("Task with this title already exists");
+      }
+      
       const response = await fetch("/api/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -103,10 +112,9 @@ export default function TasksPage() {
           categoryIds,
         }),
       });
-  
 
       if (!response.ok) {
-        throw new Error("Failed to create task");
+        throw new Error(response.statusText ||  "Failed to create task");
       }
 
       return response.json();
@@ -115,25 +123,28 @@ export default function TasksPage() {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
       queryClient.invalidateQueries({ queryKey: ["projects"] });
       queryClient.invalidateQueries({ queryKey: ["categories"] });
+
+      toast.dismiss();
       toast.success("Task created successfully");
       setIsTaskDialogOpen(false);
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error("Error creating task:", error);
-      toast.error("Failed to create task");
+      toast.dismiss();
+      toast.error(error.message || "Failed to create task");
     },
   });
 
   const updateTaskMutation = useMutation({
     mutationFn: async ({ taskId, data }: { taskId: string; data: Partial<TaskFormValues> }) => {
+      toast.loading("Updating...", { autoClose: false });
+
       let projectId: string | undefined;
       
       if (data.project) {
-        const projectById = projects.find(p => p.id === data.project);
-        if (projectById) {
-          projectId = data.project;
-        } else {
-        projectId = projects.find(p => p.name === data.project)?.id;
+        projectId = projects.find(p => p.id === data.project)?.id;
+        console.log("found project id:", projectId);
+        
         if (!projectId) {
           const projectResponse = await fetch("/api/projects", {
             method: "POST",
@@ -144,7 +155,6 @@ export default function TasksPage() {
           const newProject = await projectResponse.json();
           projectId = newProject.id;
         }
-      }
     }
   
       const categoryIds: string[] = [];
@@ -172,6 +182,11 @@ export default function TasksPage() {
       }
       
       
+      const existingTask = tasks.find((task) => task.title === data.title && task.id !== taskId)
+      if (existingTask) {
+        throw new Error("Task with this title already exists");
+      }
+      
       const response = await fetch(`/api/tasks?id=${taskId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -190,12 +205,21 @@ export default function TasksPage() {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       setIsTaskDialogOpen(false);
       setIsEditing(null);
+
+      toast.dismiss();
       toast.success('Task updated successfully');
     },
+    onError: (error: Error) => {
+      console.error('Error updating task:', error);
+      toast.dismiss();
+      toast.error(error.message || 'Failed to update task');
+    }
   });
 
   const deleteTaskMutation = useMutation({
     mutationFn: async (taskId: string) => {
+      toast.loading('Deleting...', { autoClose: false });
+
       const response = await fetch(`/api/tasks?id=${taskId}`, {
         method: 'DELETE',
       });
@@ -204,8 +228,16 @@ export default function TasksPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+
+      toast.dismiss();
       toast.success('Task deleted successfully');
     },
+    onError: (error) => {
+      console.error('Error deleting task:', error);
+      toast.dismiss();
+      toast.error('Failed to delete task');
+    }
   });
 
   const handleEdit = (task: Task) => {

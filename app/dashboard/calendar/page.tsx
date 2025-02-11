@@ -123,7 +123,7 @@ export default function CalendarPage() {
               <p className="text-sm text-muted-foreground">Loading tasks...</p>
             ) : events.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                No tasks due on this date
+                No tasks due on this date. Make sure to select a date for tasks.
               </p>
             ) : (
               events.map((event) => (
