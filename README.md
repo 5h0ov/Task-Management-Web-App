@@ -1,4 +1,4 @@
-# Task-Management-Web-App
+# TaskFlow
 A Modern, Responsive Personal Task Management System made using Next.js 15 and PostgreSQL and Typescript.
 
 ## Tech Stack
