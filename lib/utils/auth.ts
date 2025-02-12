@@ -12,7 +12,7 @@ export async function createToken(payload: JWTPayload) {
   return await new SignJWT(payload as JoseJWTPayload)
     .setProtectedHeader({ alg })
     .setIssuedAt()
-    .setExpirationTime("24h")
+    .setExpirationTime("12d")
     .sign(secret);
 }
 
