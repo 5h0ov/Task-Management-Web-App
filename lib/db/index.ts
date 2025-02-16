@@ -1,5 +1,5 @@
 import { drizzle } from 'drizzle-orm/neon-http';
-import { neon } from '@neondatabase/serverless';
+// import { neon } from '@neondatabase/serverless';
 import { config } from "dotenv";
 import fs from "fs";
 
@@ -15,8 +15,8 @@ if (envFile) {
   console.warn("No .env file found.");
 }
 
-const sql = neon(process.env.DATABASE_URL!);
-export const db = drizzle(sql);
+// const sql = neon(process.env.DATABASE_URL!);
+export const db = drizzle(process.env.DATABASE_URL!);
 
 
 // import { drizzle } from 'drizzle-orm/node-postgres';
