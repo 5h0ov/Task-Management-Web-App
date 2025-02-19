@@ -37,7 +37,7 @@ export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Header */}
-      <header className="border-b">
+      <header className="sticky top-0 z-50 border-b bg-background">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2 font-bold">
             <Layout className="h-6 w-6" />
@@ -54,7 +54,7 @@ export default function LandingPage() {
               <span className="sr-only">Toggle theme</span>
             </Button>
             {user ? (<>
-                <Link href="/">
+                <Link href="/" className="hidden md:block">
                   <Button onClick={handleLogout} variant="outline">
                     Logout
                   </Button>
@@ -64,7 +64,7 @@ export default function LandingPage() {
                 </Link>
               </>           
               ) : (<>
-                <Link href="/auth/login" className="text-sm font-medium hover:underline">
+                <Link href="/auth/login" className="text-sm font-medium hover:underline hidden md:block">
                   <Button variant="outline">
                     Login
                   </Button>
