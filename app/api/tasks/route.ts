@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     if (!token) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-
+    
     const payload = await verifyToken(token);
     console.log(payload);
 
@@ -21,6 +21,10 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const selectedDate = searchParams.get("date"); 
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const offset = (page-1) * limit;
+  
 
 
     // let userTasks = await db.select()
@@ -111,7 +115,9 @@ export async function GET(request: Request) {
       .leftJoin(categoryAssignments, eq(tasks.id, categoryAssignments.taskId))
       .leftJoin(categories, eq(categoryAssignments.categoryId, categories.id))
       .where(eq(tasks.userId, sql.raw(`'${payload.id}'::uuid`)))
-      .orderBy(desc(tasks.createdAt));
+      .orderBy(desc(tasks.createdAt))
+      .limit(limit) // the number of rows to return - no. of tasks per page
+      .offset(offset); // the number of rows to skip - for page navigation
 
     console.log("task query data: ", tasksWithRelations);
 

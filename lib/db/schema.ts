@@ -49,6 +49,8 @@ export const projects = table(
   },
   (table) => ({
     userIdIndex: index('projects_user_id_idx').on(table.userId),
+    nameIndex: index('projects_name_idx').on(table.name),
+    createdAtIndex: index('projects_created_at_idx').on(table.createdAt), 
     uniqueNamePerUser: uniqueIndex('projects_name_user_unique_idx').on(table.name, table.userId),
   })
 );
@@ -88,7 +90,7 @@ export const categoryAssignments = table(
   (table) => ({
     categoryIdx: index('category_assignments_category_idx').on(table.categoryId),
     taskIdx: index('category_assignments_task_idx').on(table.taskId),
-    
+    uniqueAssignment: uniqueIndex('unique_category_task_idx').on(table.categoryId, table.taskId), 
   })
 );
 
@@ -113,6 +115,8 @@ export const tasks = table(
   (table) => ({
     userIdIndex: index('tasks_user_id_idx').on(table.userId),
     projectIdIndex: index('tasks_project_id_idx').on(table.projectId),
+    titleIndex: index('tasks_title_idx').on(table.title),
+    dueDateIndex: index('tasks_due_date_idx').on(table.dueDate), 
     uniqueTitlePerUser: uniqueIndex('tasks_title_user_unique_idx').on(table.title, table.userId),
     // categoryIdIndex: index('tasks_category_id_idx').on(table.categoryId),
   })

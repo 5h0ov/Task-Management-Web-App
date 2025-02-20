@@ -42,10 +42,14 @@ export default function CalendarPage() {
   // query for tasks on selected date
   const { data: selectedDateTasks = [], isLoading } = useQuery<Task[]>({
     queryKey: ['tasks', date ? normalizeDate(date) : null],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       if (!date) return [];
+
       const formattedDate = normalizeDate(date);
-      const response = await fetch(`/api/tasks/dates?date=${formattedDate}`);
+      const response = await fetch(`/api/tasks/dates?date=${formattedDate}`, {
+        signal, // stops the HTTP request at the network level when the user rapidly switches dates
+      });
+      
       if (!response.ok) throw new Error('Failed to fetch tasks');
       return response.json();
     },
