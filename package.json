@@ -58,7 +58,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-timeago": "^4.1.7",
-    "drizzle-kit": "^0.30.4",
+    "drizzle-kit": "^0.19.1",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
     "postcss": "^8",
