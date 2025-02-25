@@ -25,6 +25,10 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get('limit') || '10');
     const offset = (page-1) * limit;
   
+    console.log("Selected date: ", selectedDate);
+    console.log("Page: ", page);
+    console.log("Limit: ", limit);
+    console.log("Offset: ", offset);
 
 
     // let userTasks = await db.select()

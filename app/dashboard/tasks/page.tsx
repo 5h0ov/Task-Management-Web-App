@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TaskList } from "@/components/dashboard/task-list";
 import { Plus } from "lucide-react";
@@ -28,16 +29,18 @@ export default function TasksPage() {
   const { projects, categories } = useProjectsAndCategories();
   const priorities = ["low", "medium", "high"];
   const [priorityFilter, setPriorityFilter] = useState("all");
-  
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(6);
+
   const queryClient = useQueryClient();
 
   // fetching tasks
   const { data: tasks = [], isLoading } = useQuery<Task[]>({
-    queryKey: ["tasks"],
+    queryKey: ['tasks', currentPage, limit],
     queryFn: async () => {
-      const response = await fetch("/api/tasks");
+      const response = await fetch(`/api/tasks?page=${currentPage}&limit=${limit}`);
       if (!response.ok) {
-        throw new Error("Failed to fetch tasks");
+        throw new Error('Failed to fetch tasks');
       }
       return response.json();
     },
@@ -358,6 +361,50 @@ export default function TasksPage() {
             ))}
           </SelectContent>
         </Select>
+      </div>
+      <div className="flex flex-col md:flex-row items-center justify-between p-4">
+        <div className="flex items-center gap-2">
+          <p className="text-sm text-muted-foreground">Tasks per page</p>
+          <Select 
+            value={limit.toString()} 
+            onValueChange={(value) => {
+              setLimit(Number(value));
+              setCurrentPage(1);
+            }}
+          >
+            <SelectTrigger className="w-[70px]">
+              <SelectValue placeholder={limit} />
+            </SelectTrigger>
+            <SelectContent>
+              {[6, 12, 24, 42, 60].map((pageSize) => (
+                <SelectItem key={pageSize} value={pageSize.toString()}>
+                  {pageSize}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            className="rounded-full"
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1 || isLoading}
+          >
+            <ChevronLeft className="h-8 w-8" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="rounded-full"
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            disabled={tasks?.length < limit || isLoading}
+          >
+            <ChevronRight className="h-8 w-8" />
+          </Button>
+        </div>
       </div>
 
       <Tabs defaultValue="all" className="space-y-4">
