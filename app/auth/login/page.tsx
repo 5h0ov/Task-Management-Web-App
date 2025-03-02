@@ -55,7 +55,7 @@ export default function LoginPage() {
     if (!error) return null;
 
     return (
-      <div className="p-2 text-sm text-red-500 bg-red-50 rounded-md">
+      <div className="p-2 text-base text-red-500 bg-red-50 dark:bg-transparent rounded-md">
         {error.message}
       </div>
     );

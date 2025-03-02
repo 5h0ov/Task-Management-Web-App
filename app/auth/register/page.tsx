@@ -27,7 +27,7 @@ const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  confirmPassword: z.string()
+  confirmPassword: z.string().min(1, "Confirm password is required")
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match",
   path: ["confirmPassword"],
@@ -64,7 +64,7 @@ export default function RegisterPage() {
     if (!error) return null;
 
     return (
-      <div className="text-sm text-red-500" role="alert">
+      <div className="text-base text-red-500 bg-red-50 dark:bg-transparent " role="alert">
         {error.message}
       </div>
     );
