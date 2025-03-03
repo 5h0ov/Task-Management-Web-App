@@ -17,7 +17,7 @@ interface ProjectStats extends Project {
   tasks: Task[];
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const token = (await cookies()).get('token')?.value
     if (!token) {
@@ -29,11 +29,18 @@ export async function GET() {
       return NextResponse.json({ message: "Invalid token" }, { status: 401 })
     }
 
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const offset = (page - 1) * limit;
+
     const projectsWithStats = await db.select()
       .from(projects)
       .leftJoin(tasks, eq(tasks.projectId, projects.id))
       .where(eq(projects.userId, sql.raw(`'${payload.id}'::uuid`)))
-      .orderBy(desc(projects.createdAt));
+      .orderBy(desc(projects.createdAt))
+      .limit(limit)
+      .offset(offset);
 
     // grouping tasks by project by  creating a map with project id as key and tasks as value
     const projectMap = new Map<string, ProjectWithTasks>();

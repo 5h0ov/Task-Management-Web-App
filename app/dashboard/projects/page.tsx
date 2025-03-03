@@ -17,7 +17,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { MoreVertical, Plus } from "lucide-react"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { MoreVertical, Plus, ChevronLeft, ChevronRight } from "lucide-react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { ProjectFormValues, ProjectWithStats } from "@/lib/types/schema"
 import { useState } from "react"
@@ -28,15 +35,17 @@ import { CreateProjectDialog } from "@/components/dashboard/create-project-dialo
 export default function ProjectsPage() {
   const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false)
   const [editingProject, setEditingProject] = useState<ProjectWithStats | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [limit, setLimit] = useState(6)
   const queryClient = useQueryClient()
 
   // fetch projects with task statistics
   const { data: projects = [], isLoading } = useQuery<ProjectWithStats[]>({
-    queryKey: ["projects"],
+    queryKey: ["projects", currentPage, limit],
     queryFn: async () => {
-      const response = await fetch("/api/projects/stats")
+      const response = await fetch(`/api/projects/stats?page=${currentPage}&limit=${limit}`)
       if (!response.ok) {
-        throw new Error("Failed to fetch projects")
+        throw new Error("Failed to fetch projects stats")
       }
       const data = await response.json();
       
@@ -199,6 +208,51 @@ export default function ProjectsPage() {
         </Button>
       </div>
 
+      <div className="flex flex-col md:flex-row items-center justify-between p-4">
+        <div className="flex items-center gap-2">
+          <p className="text-sm text-muted-foreground">Projects per page</p>
+          <Select 
+            value={limit.toString()} 
+            onValueChange={(value) => {
+              setLimit(Number(value));
+              setCurrentPage(1);
+            }}
+          >
+            <SelectTrigger className="w-[70px]">
+              <SelectValue placeholder={limit} />
+            </SelectTrigger>
+            <SelectContent>
+              {[6, 12, 24, 42, 60].map((pageSize) => (
+                <SelectItem key={pageSize} value={pageSize.toString()}>
+                  {pageSize}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            className="rounded-full"
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1 || isLoading}
+          >
+            <ChevronLeft className="h-8 w-8" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="rounded-full"
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            disabled={projects?.length < limit || isLoading}
+          >
+            <ChevronRight className="h-8 w-8" />
+          </Button>
+        </div>
+      </div>
+      
       {isLoading ? (
           <div className="flex items-center justify-center p-8">
             <div className="text-muted-foreground">Loading projects...</div>
