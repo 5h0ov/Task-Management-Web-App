@@ -29,6 +29,7 @@ export default function TasksPage() {
   const { projects, categories } = useProjectsAndCategories();
   const priorities = ["low", "medium", "high"];
   const [priorityFilter, setPriorityFilter] = useState("all");
+  const [activeTab, setActiveTab] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [limit, setLimit] = useState(6);
 
@@ -36,9 +37,29 @@ export default function TasksPage() {
 
   // fetching tasks
   const { data: tasks = [], isLoading } = useQuery<Task[]>({
-    queryKey: ['tasks', currentPage, limit],
+    queryKey: ['tasks', currentPage, limit, projectFilter, categoryFilter, priorityFilter, activeTab],
     queryFn: async () => {
-      const response = await fetch(`/api/tasks?page=${currentPage}&limit=${limit}`);
+      // building URL with filter parameters
+      let url = `/api/tasks?page=${currentPage}&limit=${limit}`;
+      
+      if (projectFilter !== "all") {
+        url += `&project=${encodeURIComponent(projectFilter)}`;
+      }
+      
+      if (categoryFilter !== "all") {
+        url += `&category=${encodeURIComponent(categoryFilter)}`;
+      }
+      
+      if (priorityFilter !== "all") {
+        url += `&priority=${encodeURIComponent(priorityFilter)}`;
+      }
+
+
+      if (activeTab !== "all") {
+        url += `&status=${encodeURIComponent(activeTab)}`;
+      }
+      console.log("Fetching tasks from URL:", url);
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Failed to fetch tasks');
       }
@@ -293,14 +314,14 @@ export default function TasksPage() {
   };
 
   // centralized filtering logic for tasks based on project, category, and priority
-  const filteredTasks = tasks.filter((task: Task) => {
-    const matchesProject = projectFilter === "all" || task.project?.name === projectFilter;
-    const matchesCategory = categoryFilter === "all" || 
-      task.categories?.some(cat => cat.name === categoryFilter);
-    const matchesPriority = priorityFilter === "all" || task.priority === priorityFilter;
+  // const filteredTasks = tasks.filter((task: Task) => {
+  //   const matchesProject = projectFilter === "all" || task.project?.name === projectFilter;
+  //   const matchesCategory = categoryFilter === "all" || 
+  //     task.categories?.some(cat => cat.name === categoryFilter);
+  //   const matchesPriority = priorityFilter === "all" || task.priority === priorityFilter;
     
-    return matchesProject && matchesCategory && matchesPriority;
-  });
+  //   return matchesProject && matchesCategory && matchesPriority;
+  // });
 
   return (
     <div className="flex-1 space-y-4 p-4 pt-6">
@@ -407,7 +428,13 @@ export default function TasksPage() {
         </div>
       </div>
 
-      <Tabs defaultValue="all" className="space-y-4">
+      <Tabs defaultValue="all"
+       className="space-y-4"
+       onValueChange={(value) => {
+          setActiveTab(value);
+          setCurrentPage(1); // reset pagination
+        }}
+      >
         <TabsList>
           <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="todo">To Do</TabsTrigger>
@@ -422,7 +449,7 @@ export default function TasksPage() {
             ))}
           </div>
         ) : (
-          filteredTasks.length === 0 ? (
+          tasks.length === 0 ? (
             <div className="flex items-center justify-center p-8">
               <div className="text-muted-foreground">No tasks found</div>
             </div>
@@ -430,7 +457,7 @@ export default function TasksPage() {
           <>
             <TabsContent value="all" className="space-y-4">
               <TaskList 
-                tasks={filteredTasks}
+                tasks={tasks}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 onStatusChange={handleStatusChange}
@@ -440,7 +467,7 @@ export default function TasksPage() {
             {["todo", "in_progress", "completed"].map((status) => (
               <TabsContent key={status} value={status} className="space-y-4">
                 <TaskList 
-                  tasks={filteredTasks.filter((task: Task) => task.status === status)}
+                  tasks={tasks}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
                   onStatusChange={handleStatusChange}

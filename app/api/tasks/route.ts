@@ -20,11 +20,14 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const selectedDate = searchParams.get("date"); 
+    const selectedDate = searchParams.get("date");
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
+    const projectFilter = searchParams.get('project');
+    const categoryFilter = searchParams.get('category');
+    const priorityFilter = searchParams.get('priority');
+    const statusFilter = searchParams.get('status');
     const offset = (page-1) * limit;
-  
     console.log("Selected date: ", selectedDate);
     console.log("Page: ", page);
     console.log("Limit: ", limit);
@@ -50,6 +53,19 @@ export async function GET(request: Request) {
     if (selectedDate) {
       conditions.push(eq(tasks.dueDate, sql.raw(`'${selectedDate}'::timestamp`)));
     }
+
+    if (projectFilter) {
+      conditions.push(eq(projects.name, projectFilter));
+    }
+    
+    if (priorityFilter) {
+      conditions.push(eq(tasks.priority, priorityFilter as 'low' | 'medium' | 'high'));
+    }
+
+    if (statusFilter) {
+      conditions.push(eq(tasks.status, statusFilter as 'todo' | 'in_progress' | 'completed'));
+    }
+    // console.log("conditions: ", conditions);
 
     // Fetch user tasks with optional date filtering
     // const userTasks = await db
@@ -118,7 +134,7 @@ export async function GET(request: Request) {
       .leftJoin(projects, eq(tasks.projectId, projects.id))
       .leftJoin(categoryAssignments, eq(tasks.id, categoryAssignments.taskId))
       .leftJoin(categories, eq(categoryAssignments.categoryId, categories.id))
-      .where(eq(tasks.userId, sql.raw(`'${payload.id}'::uuid`)))
+      .where(and(...conditions))
       .orderBy(desc(tasks.createdAt))
       .limit(limit) // the number of rows to return - no. of tasks per page
       .offset(offset); // the number of rows to skip - for page navigation
@@ -165,7 +181,17 @@ export async function GET(request: Request) {
       }
     });
 
-    const frontendTaskData = Array.from(taskMap.values());
+    let frontendTaskData = Array.from(taskMap.values());
+
+    if (categoryFilter) {
+      // filter tasks that have at least one category matching the filter (provided categoryFilter is provided)
+      frontendTaskData = frontendTaskData.filter(task => 
+        task.categories?.some((category: { id: string; name: string; color: string }) => 
+          category.name === categoryFilter
+        )
+      );
+    }
+    
     return NextResponse.json(frontendTaskData, { status: 200 });
 
   } catch (error: unknown) {
