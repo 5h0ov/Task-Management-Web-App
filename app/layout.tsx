@@ -11,6 +11,9 @@ import { Layout } from 'lucide-react';
 export const metadata: Metadata = {
   title: 'TaskFlow - Personal Task Management System',
   description: 'Organize your tasks and projects efficiently with TaskFlow',
+  verification: {
+    google: 'IS_ltGSttjxtOmfTl89veubmRVaFePs0A4r6Tm2gjAA',
+  },
 };
 
 const inter = Inter({ subsets: ['latin'] });
