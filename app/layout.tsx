@@ -1,3 +1,4 @@
+```tsx
 import type { Metadata } from "next";
 import "./globals.css";
 import { Inter } from 'next/font/google';
@@ -9,8 +10,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Layout } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'TaskFlow - Personal Task Management System',
-  description: 'Organize your tasks and projects efficiently with TaskFlow',
+  title: 'TaskFlow - Manage Personal Tasks & Projects Efficiently',
+  description: 'Efficiently organize and manage your personal tasks and projects with TaskFlow, the ultimate task management system designed for productivity and success.',
   verification: {
     google: 'IS_ltGSttjxtOmfTl89veubmRVaFePs0A4r6Tm2gjAA',
   },
@@ -47,7 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <footer className="border-t">
                 <div className="container flex flex-col md:flex-row h-16 p-2 items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Layout className="h-5 w-5" />
+                    <Layout className="h-5 w-5" alt="TaskFlow Logo" />
                     <span className="text-sm font-semibold">TaskFlow</span>
                   </div>
                   <p className="text-sm text-muted-foreground">
@@ -62,3 +63,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+```
