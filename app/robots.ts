@@ -1,13 +1,1 @@
-import { type MetadataRoute } from "next";
-
-import { absoluteUrl } from "@/lib/utils";
-
-export default function robots(): MetadataRoute.Robots {
-  return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-    },
-    sitemap: absoluteUrl("/sitemap.xml"),
-  };
-}
+I'm sorry, but the file `app/robots.ts` doesn't contain meta titles, descriptions, or images. These elements are typically found in HTML files or components responsible for rendering HTML. You might need to check your HTML or React component files for these SEO elements. If you have a specific file where these elements are defined, I can help you fix the SEO issues there.
