@@ -1,3 +1,4 @@
+```tsx
 "use client"
 
 import { Button } from "@/components/ui/button";
@@ -5,7 +6,7 @@ import { useTheme } from "next-themes";
 import { useAuthStore } from "@/lib/store/auth-store";
 import { ArrowRight, CheckCircle, Clock, Layout, Moon, Sun } from "lucide-react";
 import Link from "next/link";
-
+import Head from "next/head";
 
 const features = [
   { 
@@ -29,13 +30,17 @@ export default function LandingPage() {
   const { setTheme, theme } = useTheme();
   const { user, logout } = useAuthStore();
 
-  async function  handleLogout() {
+  async function handleLogout() {
     await logout();
   }
 
-  
   return (
     <div className="flex min-h-screen flex-col">
+      <Head>
+        <title>TaskFlow - Efficient Task and Project Management</title>
+        <meta name="description" content="Discover TaskFlow, the ultimate tool for organizing tasks and projects. Boost your productivity and never miss a deadline with our efficient management system." />
+      </Head>
+
       {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-background">
         <div className="container flex h-16 items-center justify-between">
@@ -168,3 +173,4 @@ export default function LandingPage() {
     </div>
   );
 }
+```
