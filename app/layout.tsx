@@ -7,6 +7,7 @@ import AuthProvider from '@/components/AuthProvider';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Layout } from 'lucide-react';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'TaskFlow - Personal Task Management System',
@@ -21,6 +22,21 @@ const inter = Inter({ subsets: ['latin'] });
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-HSR6C3E6TE"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-HSR6C3E6TE');
+          `}
+        </Script>
+      </head>
       <body className={inter.className}>
         <ThemeProvider
           attribute="class"
@@ -51,7 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     <span className="text-sm font-semibold">TaskFlow</span>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    © 2024 TaskFlow. All rights reserved.
+                    © 2024 TaskFlow. All rights reserved. 
                   </p>
                 </div>
               </footer>
